@@ -10,7 +10,8 @@ The public brand is `ResZa`. `ComfortCore` is used as the slogan/promise: helpin
 
 - `index.html` - Marketplace layout, search, filters, listings, and modals.
 - `styles.css` - Responsive marketplace styling.
-- `script.js` - Search, filters, sorting, listing actions, and form feedback.
+- `script.js` - Search, filters, sorting, Firebase form submissions, and form feedback.
+- `firebase-config.js` - Firebase web app connection copied from the existing Flutter Firebase config.
 - `assets/` - Local room and logo images copied from the Flutter project.
 
 ## Open
@@ -18,3 +19,5 @@ The public brand is `ResZa`. `ComfortCore` is used as the slogan/promise: helpin
 Open `index.html` in a browser.
 
 No Flutter build is required for this version.
+
+For Firebase submissions, run the folder through a local server such as `python -m http.server`.

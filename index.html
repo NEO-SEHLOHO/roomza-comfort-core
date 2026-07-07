@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ResZa helps students find rooms in Bloemfontein, Potchefstroom, and Welkom, compare options, and enquire before they pay."
+    />
+    <title>ResZa | Student Rooms Near Campus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650;9..144,750;9..144,850&family=Nunito+Sans:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js" defer></script>
+    <script src="firebase-config.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="ResZa home">
+        <span class="brand-mark">R</span>
+        <span>
+          <strong>ResZa</strong>
+          <small>ComfortCore: settle in easier</small>
+        </span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mainNav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav">
+        <a href="#rooms">Find rooms</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#list-property">List property</a>
+      </nav>
+
+      <div class="account-actions">
+        <button class="ghost-button" type="button" data-open-modal="login">Login</button>
+        <button class="primary-button" type="button" data-open-modal="list">List a room</button>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="search-hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Bloem, Potch, Welkom</p>
+          <h1 id="hero-title">Find a student room before you arrive.</h1>
+          <p>
+            Search near UFS, CUT, NWU Potchefstroom, and Welkom campus areas. Compare rent,
+            distance, included items, and check status first. ComfortCore is our way of helping new
+            students feel at home in a city they are still learning.
+          </p>
+        </div>
+
+        <form class="search-card" data-search-form>
+          <label class="search-field wide">
+            <span>Where do you want to stay?</span>
+            <input
+              type="search"
+              name="keyword"
+              placeholder="Search Bloem, Potch, Welkom, campus, or suburb"
+              data-keyword
+            />
+          </label>
+          <label class="search-field">
+            <span>Max budget</span>
+            <select name="budget" data-budget>
+              <option value="99999">Any budget</option>
+              <option value="3500">Up to R3,500</option>
+              <option value="4000">Up to R4,000</option>
+              <option value="4500">Up to R4,500</option>
+              <option value="5500">Up to R5,500</option>
+            </select>
+          </label>
+          <label class="search-field">
+            <span>Room type</span>
+            <select name="type" data-type>
+              <option value="all">Any type</option>
+              <option value="private">Private room</option>
+              <option value="shared">Shared unit</option>
+              <option value="studio">Studio</option>
+            </select>
+          </label>
+          <button class="search-button" type="submit">Search rooms</button>
+        </form>
+
+        <div class="quick-filters" aria-label="Quick filters">
+          <button type="button" data-quick="verified">Verified only</button>
+          <button type="button" data-quick="wifi">Wi-Fi included</button>
+          <button type="button" data-quick="furnished">Furnished</button>
+          <button type="button" data-quick="available">Available now</button>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="Marketplace trust signals">
+        <div>
+          <strong>Checked listings</strong>
+          <span>Photos, rent, and contact details reviewed before publishing</span>
+        </div>
+        <div>
+          <strong>Know the area</strong>
+          <span>Campus distance, transport routes, Wi-Fi, and furniture noted upfront</span>
+        </div>
+        <div>
+          <strong>Ask before you pay</strong>
+          <span>Send an enquiry before sharing documents or deposit money</span>
+        </div>
+      </section>
+
+      <section class="marketplace" id="rooms">
+        <aside class="filters" aria-label="Room filters">
+          <div class="filter-header">
+            <strong>Filters</strong>
+            <button type="button" data-reset>Reset</button>
+          </div>
+
+          <fieldset>
+            <legend>Availability</legend>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="available" />
+              Available now
+            </label>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="verified" />
+              Verified property
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Included</legend>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="wifi" />
+              Wi-Fi included
+            </label>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="furnished" />
+              Furnished
+            </label>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="laundry" />
+              Laundry access
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Distance</legend>
+            <label class="check-row">
+              <input type="checkbox" data-checkbox="walkable" />
+              Walkable to campus
+            </label>
+          </fieldset>
+        </aside>
+
+        <section class="results-panel" aria-live="polite">
+          <div class="results-toolbar">
+            <div>
+              <p class="eyebrow">Available rooms</p>
+              <h2><span data-result-count>6</span> student rooms found</h2>
+            </div>
+            <label class="sort-control">
+              Sort
+              <select data-sort>
+                <option value="recommended">Recommended</option>
+                <option value="price-low">Price: low to high</option>
+                <option value="distance">Closest to campus</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="empty-state" data-empty hidden>
+            <h3>No matching rooms yet</h3>
+            <p>Try increasing your budget or removing one filter.</p>
+          </div>
+
+          <div class="listing-stack">
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Universitas room near UFS"
+              data-area="Universitas Bloemfontein UFS University Free State"
+              data-campus="UFS Bloemfontein Campus"
+              data-price="3250"
+              data-type="shared"
+              data-distance="0.8"
+              data-verified="true"
+              data-wifi="true"
+              data-furnished="true"
+              data-laundry="true"
+              data-available="true"
+              data-walkable="true"
+            >
+              <div class="listing-image">
+                <img src="assets/single-room.jpg" alt="Simple furnished student room with desk" />
+                <span class="badge verified">Verified</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Universitas, Bloemfontein - 0.8 km from UFS</p>
+                  <h3>Universitas Room near UFS</h3>
+                  <p>Room in a four-bedroom student house with a lockable door, study desk, fibre Wi-Fi, shared kitchen, and washing machine.</p>
+                  <div class="features">
+                    <span>Private bedroom</span>
+                    <span>Wi-Fi</span>
+                    <span>Furnished</span>
+                    <span>Laundry</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R3,250 <span>pm</span></p>
+                  <p class="status">Available now</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Westdene room near CUT"
+              data-area="Westdene Bloemfontein CUT Central University Technology"
+              data-campus="CUT Bloemfontein Campus"
+              data-price="3850"
+              data-type="private"
+              data-distance="1.2"
+              data-verified="true"
+              data-wifi="true"
+              data-furnished="true"
+              data-laundry="false"
+              data-available="true"
+              data-walkable="true"
+            >
+              <div class="listing-image">
+                <img src="assets/hero-room.jpg" alt="Bright student room with blue wall and study desk" />
+                <span class="badge verified">Verified</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Westdene, Bloemfontein - 1.2 km from CUT</p>
+                  <h3>Westdene Room near CUT</h3>
+                  <p>Private room in a quiet flat with morning light, cupboard space, desk, uncapped Wi-Fi, and prepaid electricity included.</p>
+                  <div class="features">
+                    <span>Private</span>
+                    <span>Wi-Fi</span>
+                    <span>Furnished</span>
+                    <span>Study desk</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R3,850 <span>pm</span></p>
+                  <p class="status">Available now</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Bult ensuite near NWU"
+              data-area="Die Bult Potchefstroom NWU North-West University"
+              data-campus="NWU Potchefstroom Campus"
+              data-price="4200"
+              data-type="private"
+              data-distance="0.5"
+              data-verified="true"
+              data-wifi="true"
+              data-furnished="true"
+              data-laundry="true"
+              data-available="false"
+              data-walkable="true"
+            >
+              <div class="listing-image">
+                <img src="assets/private-room.jpg" alt="Modern private student bedroom with desk" />
+                <span class="badge verified">Verified</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Die Bult, Potchefstroom - 0.5 km from NWU</p>
+                  <h3>Bult Ensuite near NWU</h3>
+                  <p>Ensuite room close to campus gates with secure access, laundry room, study desk, and a small waitlist for the next intake.</p>
+                  <div class="features">
+                    <span>Private</span>
+                    <span>Wi-Fi</span>
+                    <span>Laundry</span>
+                    <span>Secure access</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R4,200 <span>pm</span></p>
+                  <p class="status waitlist">Join waitlist</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Dassierand shared room"
+              data-area="Dassierand Potchefstroom NWU North-West University"
+              data-campus="NWU Potchefstroom Campus"
+              data-price="2950"
+              data-type="shared"
+              data-distance="2.8"
+              data-verified="false"
+              data-wifi="false"
+              data-furnished="true"
+              data-laundry="false"
+              data-available="true"
+              data-walkable="false"
+            >
+              <div class="listing-image">
+                <img src="assets/study-room.jpg" alt="Student room with study desk and wall decor" />
+                <span class="badge pending">Pending checks</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Dassierand, Potchefstroom - 2.8 km from NWU</p>
+                  <h3>Dassierand Shared Room</h3>
+                  <p>Furnished shared room near taxi routes. Best for students who want a lower monthly rent and do most of their studying on campus.</p>
+                  <div class="features">
+                    <span>Shared unit</span>
+                    <span>Furnished</span>
+                    <span>Transport nearby</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R2,950 <span>pm</span></p>
+                  <p class="status">Available now</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Welkom studio near CUT"
+              data-area="Welkom CUT Central University Technology Free State"
+              data-campus="CUT Welkom Campus"
+              data-price="5200"
+              data-type="studio"
+              data-distance="1.6"
+              data-verified="true"
+              data-wifi="true"
+              data-furnished="true"
+              data-laundry="true"
+              data-available="true"
+              data-walkable="false"
+            >
+              <div class="listing-image">
+                <img src="assets/private-room.jpg" alt="Clean private student suite with bed and work area" />
+                <span class="badge verified">Verified</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Welkom Central - 1.6 km from CUT Welkom</p>
+                  <h3>Welkom Studio near CUT</h3>
+                  <p>Small studio with private kitchenette, own bathroom, desk area, Wi-Fi, and laundry access in the building.</p>
+                  <div class="features">
+                    <span>Studio</span>
+                    <span>Wi-Fi</span>
+                    <span>Laundry</span>
+                    <span>Furnished</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R5,200 <span>pm</span></p>
+                  <p class="status">Available now</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="listing-card"
+              data-listing
+              data-title="Welkom Central room"
+              data-area="Welkom Central CUT Goldfields"
+              data-campus="CUT Welkom Campus"
+              data-price="3650"
+              data-type="private"
+              data-distance="0.9"
+              data-verified="true"
+              data-wifi="true"
+              data-furnished="false"
+              data-laundry="true"
+              data-available="true"
+              data-walkable="true"
+            >
+              <div class="listing-image">
+                <img src="assets/single-room.jpg" alt="Minimal private student bedroom with desk" />
+                <span class="badge verified">Verified</span>
+              </div>
+              <div class="listing-body">
+                <div class="listing-main">
+                  <p class="location">Welkom Central - 0.9 km from CUT Welkom</p>
+                  <h3>Welkom Central Room</h3>
+                  <p>Private room in a central building with shared kitchen, laundry access, and easy taxi routes to campus.</p>
+                  <div class="features">
+                    <span>Private</span>
+                    <span>Wi-Fi</span>
+                    <span>Laundry</span>
+                    <span>Walkable</span>
+                  </div>
+                </div>
+                <div class="listing-side">
+                  <p class="price">R3,650 <span>pm</span></p>
+                  <p class="status">Available now</p>
+                  <button type="button" class="primary-button full" data-open-modal="enquiry">
+                    Enquire
+                  </button>
+                  <button type="button" class="ghost-button full" data-open-modal="details">
+                    View details
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="how-it-works" id="how-it-works">
+        <div class="section-heading">
+          <p class="eyebrow">How it works</p>
+          <h2>Find a room without guessing.</h2>
+        </div>
+        <div class="steps">
+          <article>
+            <span>1</span>
+            <h3>Search</h3>
+            <p>Start with your town, campus, suburb, or monthly budget.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h3>Compare</h3>
+            <p>Check rent, distance, included items, and listing status.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h3>Enquire</h3>
+            <p>Ask for viewing times and next steps before paying anything.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="owner-cta" id="list-property">
+        <div>
+          <p class="eyebrow">For property owners</p>
+          <h2>Add your student rooms to ResZa.</h2>
+          <p>
+            List rooms with photos, rent, house rules, and available move-in dates. ResZa reviews
+            the details before students start sending enquiries.
+          </p>
+        </div>
+        <button class="primary-button" type="button" data-open-modal="list">List your property</button>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>ResZa</strong>
+        <p>ComfortCore: helping students feel at home in a city they are still learning.</p>
+      </div>
+      <nav aria-label="Footer navigation">
+        <a href="#rooms">Rooms</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#list-property">List property</a>
+      </nav>
+    </footer>
+
+    <div class="modal" data-modal hidden>
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal-close" type="button" aria-label="Close" data-close-modal></button>
+        <p class="eyebrow" data-modal-eyebrow>Student enquiry</p>
+        <h2 id="modal-title" data-modal-title>Enquire about this room</h2>
+        <p data-modal-copy>
+          Send your details and the accommodation team can confirm availability.
+        </p>
+        <form class="modal-form" data-modal-form>
+          <label data-name-field>
+            Full name
+            <input type="text" name="name" placeholder="Your name" required />
+          </label>
+          <label data-email-field>
+            Email address
+            <input type="email" name="email" placeholder="student@example.com" required />
+          </label>
+          <label data-password-field hidden>
+            Password
+            <input type="password" name="password" placeholder="Your password" />
+          </label>
+          <label data-phone-field>
+            Phone number
+            <input type="tel" name="phone" placeholder="Optional" />
+          </label>
+          <button class="primary-button full" type="submit" data-modal-submit>Send enquiry</button>
+        </form>
+        <p class="modal-note">
+          ResZa will never ask you to pay a deposit before you have spoken to the property contact.
+        </p>
+      </section>
+    </div>
+
+    <div class="toast" data-toast hidden></div>
+  </body>
+</html>
