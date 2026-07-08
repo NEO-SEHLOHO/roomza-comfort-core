@@ -7,7 +7,6 @@ const typeSelect = document.querySelector("[data-type]");
 const sortSelect = document.querySelector("[data-sort]");
 const resetButton = document.querySelector("[data-reset]");
 const authButton = document.querySelector("[data-auth-button]");
-const userMenu = document.querySelector("[data-user-menu]");
 const applicationCountBadge = document.querySelector("[data-application-count]");
 const statusButton = document.querySelector("[data-status-button]");
 const logoutButton = document.querySelector("[data-logout]");
@@ -306,18 +305,24 @@ function saveLocalUserProfile(user, updates = {}) {
   writeDemoStore(store);
 }
 
-function userLabel(user) {
-  if (!user) return "";
-  if (user.displayName) return user.displayName.split(" ")[0];
-  if (user.email) return user.email.split("@")[0];
-  return "Account";
-}
-
 function setApplicationCount(count) {
   if (!applicationCountBadge) return;
 
+  const label = `${count} ${count === 1 ? "application" : "applications"}`;
+
   applicationCountBadge.hidden = false;
-  applicationCountBadge.textContent = `${count} ${count === 1 ? "application" : "applications"}`;
+  applicationCountBadge.textContent = label;
+  applicationCountBadge.title = "Open applications";
+  applicationCountBadge.setAttribute("aria-label", `Open your ${label}`);
+}
+
+function showApplicationsButton(label = "Applications") {
+  if (!applicationCountBadge) return;
+
+  applicationCountBadge.hidden = false;
+  applicationCountBadge.textContent = label;
+  applicationCountBadge.title = "Open applications";
+  applicationCountBadge.setAttribute("aria-label", "Open your applications");
 }
 
 function hideApplicationCount() {
@@ -325,6 +330,8 @@ function hideApplicationCount() {
 
   applicationCountBadge.hidden = true;
   applicationCountBadge.textContent = "0 applications";
+  applicationCountBadge.removeAttribute("title");
+  applicationCountBadge.removeAttribute("aria-label");
 }
 
 function formatMoney(value) {
@@ -469,6 +476,8 @@ async function loadApplicationCount(user) {
   if (applicationCountBadge) {
     applicationCountBadge.hidden = false;
     applicationCountBadge.textContent = "Checking applications";
+    applicationCountBadge.title = "Open applications";
+    applicationCountBadge.setAttribute("aria-label", "Open your applications");
   }
 
   const ids = new Set();
@@ -488,7 +497,7 @@ async function loadApplicationCount(user) {
   if (requestId !== applicationCountRequest) return;
 
   if (successfulQueries === 0) {
-    hideApplicationCount();
+    showApplicationsButton();
     return;
   }
 
@@ -544,11 +553,6 @@ function updateAuthHeader(user) {
   signedInUser = user || null;
 
   if (authButton) authButton.hidden = isSignedIn;
-  if (userMenu) {
-    userMenu.hidden = !isSignedIn;
-    userMenu.textContent = isSignedIn ? `Hi, ${userLabel(user)}` : "";
-    userMenu.title = user?.email || "";
-  }
   if (logoutButton) logoutButton.hidden = !isSignedIn;
   if (statusButton) statusButton.hidden = !isSignedIn;
 

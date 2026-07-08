@@ -6,13 +6,13 @@ It is built to feel closer to Booking.com / Property24: students land on search,
 
 The public brand is `ResZa`. `ComfortCore` is used as the slogan/promise: helping students feel comfortable and settled when they move into a city they have never lived in before.
 
-Login uses email and password only. Registration collects name, email, phone number, and password, then creates a Firebase Auth user and stores the student profile in Firestore under `users`. The header listens to Firebase Auth state and changes from `Login` to a signed-in greeting with `Logout`.
+Login uses email and password only. Registration collects name, email, phone number, and password, then creates a Firebase Auth user and stores the student profile in Firestore under `users`. The header listens to Firebase Auth state and changes from `Login` to signed-in account actions with `Logout`.
 
 Room applications from the website are written to the same Firestore collection used by the Flutter application form: `residence_applications`. The website saves the core Flutter fields (`name`, `studentID`, `studentNumber`, `contact`, `gender`, `fundingType`, `nsfasRef`, `bursaryRef`, `uploadedFilePath`, `email`, `timestamp`, and `applicationStatus`) so existing admin/application screens can read them.
 
 When a student is signed in, the header also counts matching `residence_applications` documents and shows how many applications that student has submitted.
 
-Signed-in students can open `My applications` from the header to view every residence they applied for, including each saved `applicationStatus`.
+Signed-in students can click the application-count button in the header to view every residence they applied for, including each saved `applicationStatus`.
 
 ## Files
 

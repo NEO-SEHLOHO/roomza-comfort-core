@@ -157,17 +157,10 @@ button {
   gap: 10px;
 }
 
-.user-button {
-  max-width: 180px;
-  overflow: hidden;
-  color: var(--teal);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .application-count {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 34px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -177,6 +170,13 @@ button {
   font-size: 12px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.application-count:hover,
+.application-count:focus-visible {
+  color: var(--teal);
+  border-color: rgba(15, 118, 110, 0.28);
+  background: var(--soft-2);
 }
 
 .primary-button,
@@ -930,7 +930,6 @@ legend {
 .modal-form label[hidden],
 .auth-switch[hidden],
 .ghost-button[hidden],
-.user-button[hidden],
 .application-count[hidden] {
   display: none !important;
 }
