@@ -10,18 +10,37 @@ Login uses email and password only. Registration collects name, email, phone num
 
 Room applications from the website are written to the same Firestore collection used by the Flutter application form: `residence_applications`. The website saves the core Flutter fields (`name`, `studentID`, `studentNumber`, `contact`, `gender`, `fundingType`, `nsfasRef`, `bursaryRef`, `uploadedFilePath`, `email`, `timestamp`, and `applicationStatus`) so existing admin/application screens can read them.
 
+When a student is signed in, the header also counts matching `residence_applications` documents and shows how many applications that student has submitted.
+
 ## Files
 
 - `index.html` - Marketplace layout, search, filters, listings, and modals.
 - `styles.css` - Responsive marketplace styling.
 - `script.js` - Search, filters, sorting, Firebase form submissions, and form feedback.
-- `firebase-config.js` - Firebase web app connection copied from the existing Flutter Firebase config.
+- `firebase-config.js` - Public-safe Firebase loader with blank placeholder values.
+- `firebase-config.local.example.js` - Copy this to `firebase-config.local.js` locally and add your real Firebase web config there.
 - `assets/` - Local room and logo images copied from the Flutter project.
+
+## Firebase config
+
+The GitHub-safe version does not need real Firebase values in `firebase-config.js`.
+
+For local/live Firebase:
+
+1. Copy `firebase-config.local.example.js` to `firebase-config.local.js`.
+2. Paste the real Firebase web config into `firebase-config.local.js`.
+3. Keep `firebase-config.local.js` out of git. It is ignored by `.gitignore`.
+
+If Firebase config is missing, the website switches to local demo mode. Forms still work, login/register creates a local browser session, applications are saved in `localStorage`, and the application count still works in that browser. Demo-mode applications do not appear in the Firebase/admin side.
 
 ## Open
 
-Open `index.html` in a browser.
+Use a local server:
+
+```bash
+python -m http.server 8091
+```
 
 No Flutter build is required for this version.
 
-For Firebase submissions, run the folder through a local server such as `python -m http.server`.
+Then open `http://127.0.0.1:8091`.
